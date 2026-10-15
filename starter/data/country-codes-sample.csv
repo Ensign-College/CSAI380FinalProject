@@ -1,0 +1,24 @@
+FIFA,ISO3166-1-Alpha-3,official_name_en,Capital,Continent,currency_name,TLD,Dial
+USA,USA,United States of America,Washington,NA,US Dollar,.us,1
+CAN,CAN,Canada,Ottawa,NA,Canadian Dollar,.ca,1
+MEX,MEX,Mexico,Mexico City,NA,Mexican Peso,.mx,52
+BRA,BRA,Brazil,Brasilia,SA,Brazilian Real,.br,55
+ARG,ARG,Argentina,Buenos Aires,SA,Argentine Peso,.ar,54
+GBR,GBR,United Kingdom of Great Britain and Northern Ireland,London,EU,Pound Sterling,.uk,44
+FRA,FRA,France,Paris,EU,Euro,.fr,33
+DEU,DEU,Germany,Berlin,EU,Euro,.de,49
+ESP,ESP,Spain,Madrid,EU,Euro,.es,34
+ITA,ITA,Italy,Rome,EU,Euro,.it,39
+NGA,NGA,Nigeria,Abuja,AF,Naira,.ng,234
+ZAF,ZAF,South Africa,Pretoria,AF,Rand,.za,27
+EGY,EGY,Egypt,Cairo,AF,Egyptian Pound,.eg,20
+IND,IND,India,New Delhi,AS,Indian Rupee,.in,91
+CHN,CHN,China,Beijing,AS,Yuan Renminbi,.cn,86
+JPN,JPN,Japan,Tokyo,AS,Yen,.jp,81
+KOR,KOR,Republic of Korea,Seoul,AS,Won,.kr,82
+PHL,PHL,Philippines,Manila,AS,Philippine Peso,.ph,63
+AUS,AUS,Australia,Canberra,OC,Australian Dollar,.au,61
+NZL,NZL,New Zealand,Wellington,OC,New Zealand Dollar,.nz,64
+,XKX,Kosovo,Pristina,EU,Euro,.xk,383
+TON,TON,Tonga,Nuku'alofa,OC,Pa'anga,.to,676
+ATL,,Atlantis,Poseidonis,OC,Sand Dollar,.atl,0

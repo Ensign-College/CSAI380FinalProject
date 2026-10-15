@@ -1,0 +1,15 @@
+# Exposes STEDI inside the cluster; students may switch type to LoadBalancer
+# during week 1 to reach it from a browser (dev only).
+apiVersion: v1
+kind: Service
+metadata:
+  name: stedi
+  namespace: <your-namespace>
+spec:
+  type: ClusterIP
+  selector:
+    app: stedi
+  ports:
+    - name: http
+      port: 80
+      targetPort: 4567

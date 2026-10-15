@@ -1,0 +1,21 @@
+# Utility pod with the Kafka CLI scripts (kafka-console-producer.sh /
+# kafka-console-consumer.sh) — week 4. Exec in with:
+#   kubectl exec -it kafka-client -n <your-namespace> -- bash
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-client
+  namespace: <your-namespace>
+spec:
+  restartPolicy: Never
+  containers:
+    - name: kafka-client
+      image: bitnami/kafka:3.9
+      command: ["sleep", "infinity"]
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        limits:
+          cpu: "250m"
+          memory: "256Mi"

@@ -1,0 +1,28 @@
+# Values for the official Apache Airflow Helm chart (apache-airflow/airflow), Airflow 3.
+# Install:
+#   helm repo add apache-airflow https://airflow.apache.org
+#   helm upgrade --install airflow apache-airflow/airflow \
+#     -n <your-namespace> -f starter/helm/airflow-values.yaml
+
+executor: LocalExecutor
+
+# Keep the footprint small for a shared teaching cluster
+workers:
+  replicas: 1
+
+webserverSecretKeySecretName: airflow-webserver-secret   # create with kubectl, see 3.5 instructions
+
+dags:
+  gitSync:
+    enabled: true
+    # TODO(student): point gitSync at YOUR assignment repository so Airflow
+    # loads the DAG in dags/etl_pipeline.py
+    repo: https://github.com/<your-github-user>/<your-assignment-repo>.git
+    branch: main
+    subPath: dags
+    period: 60s
+
+# Extra pip packages the ETL DAG needs
+extraPipPackages:
+  - apache-airflow-providers-google
+  - apache-airflow-providers-mysql

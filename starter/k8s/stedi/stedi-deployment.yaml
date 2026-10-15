@@ -1,0 +1,52 @@
+# STEDI application deployment — week 1 workload.
+# Replace every <angle-bracket> placeholder with your own values.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stedi
+  namespace: <your-namespace>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stedi
+  template:
+    metadata:
+      labels:
+        app: stedi
+    spec:
+      serviceAccountName: stedi-dev-sa
+      containers:
+        - name: stedi
+          image: <region>-docker.pkg.dev/<project-id>/<your-namespace>-images/stedi:latest
+          env:
+            # Redis wiring is completed in week 2 (2.5 Saving the Data).
+            - name: REDIS_HOST
+              value: "redis-stedi"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DB
+              value: "0"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASS
+            # Kafka wiring is completed in week 4 (4.5 Streaming or Micro-batches).
+            - name: KAFKA_BROKER
+              value: "localhost:9092"
+          ports:
+            - containerPort: 4567
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+            requests:
+              cpu: "250m"
+              memory: "250Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4567
+            initialDelaySeconds: 10
+            periodSeconds: 5

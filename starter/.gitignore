@@ -1,0 +1,19 @@
+# Terraform state
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform/
+.terraform.lock.hcl
+
+# Credentials and keys — never commit these
+*.json.key
+*-key.json
+service-account*.json
+credentials*.json
+*.pem
+*.p12
+.env
+env.list
+
+# Editor noise
+.DS_Store

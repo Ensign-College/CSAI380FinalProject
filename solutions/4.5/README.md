@@ -1,0 +1,56 @@
+# 4.5 Streaming or Micro-batches — Teacher Notes
+
+> Exercise status: 🚧 DRAFT — gotchas below are preliminary and will be expanded during verification testing.
+
+## Solutions
+
+### Patch TODO — `KAFKA_RISK_TOPIC`
+
+Completed patch in [stedi-kafka-patch.yaml](stedi-kafka-patch.yaml); the added variable:
+
+```yaml
+            - name: KAFKA_RISK_TOPIC
+              value: "customer-risk"
+```
+
+`customer-risk` matches the default in stedi-private's `env.list`; `KafkaProducerUtil` reads `KAFKA_BROKER` from the environment.
+
+### Command transcript
+
+```bash
+helm upgrade --install kafka oci://registry-1.docker.io/bitnamicharts/kafka \
+  -n <ns> -f helm/kafka-values.yaml
+
+kubectl apply -f k8s/kafka/kafka-client.yaml -n <ns>
+kubectl exec -it kafka-client -n <ns> -- bash
+
+# inside the pod
+kafka-topics.sh --create --topic customer-risk --partitions 1 --replication-factor 1 \
+  --bootstrap-server kafka.<ns>.svc.cluster.local:9092
+kafka-console-producer.sh --topic customer-risk \
+  --bootstrap-server kafka.<ns>.svc.cluster.local:9092
+# second terminal
+kafka-console-consumer.sh --topic customer-risk --from-beginning \
+  --bootstrap-server kafka.<ns>.svc.cluster.local:9092
+
+# connect STEDI and start the simulation
+kubectl patch deployment stedi -n <ns> --patch-file k8s/kafka/stedi-kafka-patch.yaml
+kubectl port-forward svc/stedi 8080:80 -n <ns>
+curl -X POST http://localhost:8080/simulation    # start (GET checks, DELETE stops)
+
+kubectl apply -f k8s/kafka/logging-consumer.yaml -n <ns>
+kubectl logs -f deployment/risk-logging-consumer -n <ns>
+```
+
+### Processing-model answer key
+
+STEDI risk events are **streaming**: events are produced continuously as users complete step tests and consumed within seconds, one event at a time, with no accumulation window. Batch would fit a nightly re-score of all historical customers; micro-batch would fit aggregating risk scores every few minutes for a dashboard where second-level latency is unnecessary.
+
+## Gotchas
+
+- **Bitnami chart renamed broker values to `controller.*`** in the KRaft era; older tutorials that set `replicaCount` at the top level silently deploy defaults (chart key renames).
+- **Consumer says `LEADER_NOT_AVAILABLE` right after install** — Kafka takes a minute to elect; retry rather than reinstalling.
+- **Patch replaces the whole env list?** No — a strategic-merge patch on a named container merges env entries, but if students hand-edit and re-apply the full deployment they may clobber week-2 Redis env vars. Check `kubectl get deploy stedi -o yaml` after patching.
+- **Simulation produces nothing** if STEDI cannot reach Redis — the simulation creates users/sessions through the same code paths; verify week-2 services are still healthy first.
+- **DNS name differs if the Helm release isn't `kafka`** — service is `<release>.<ns>.svc.cluster.local`; students who ran `helm install my-kafka ...` must adjust every bootstrap-server string.
+- **`--from-beginning` floods with old dummy events** during the STEDI demo; drop the flag when capturing "live" evidence.

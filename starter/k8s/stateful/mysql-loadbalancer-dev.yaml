@@ -1,0 +1,17 @@
+# ⚠️⚠️ DEV ONLY — NEVER DO THIS IN PRODUCTION ⚠️⚠️
+# This exposes MySQL to the public internet so MySQL Workbench can connect
+# during the class exercise. Delete this service as soon as you finish testing:
+#   kubectl delete -n <your-namespace> -f mysql-loadbalancer-dev.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-public-dev
+  namespace: <your-namespace>
+spec:
+  type: LoadBalancer
+  selector:
+    app: mysql
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306

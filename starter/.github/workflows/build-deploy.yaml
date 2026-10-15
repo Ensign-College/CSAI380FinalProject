@@ -1,0 +1,49 @@
+# Builds the STEDI image, pushes it to Artifact Registry, and deploys to GKE.
+# Requires repository secrets: GCP_PROJECT_ID, GCP_SA_KEY (JSON key for a CI service account),
+# GKE_CLUSTER, GKE_REGION. Set STUDENT_NAMESPACE below.
+name: build-deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGION: us-central1
+  STUDENT_NAMESPACE: <your-namespace>
+  IMAGE_NAME: stedi
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: |
+          docker build --platform linux/amd64 \
+            -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.STUDENT_NAMESPACE }}-images/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Push image
+        run: |
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.STUDENT_NAMESPACE }}-images/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER }}
+          location: ${{ secrets.GKE_REGION }}
+
+      # TODO(student): week 1 — update the image tag in k8s/stedi/stedi-deployment.yaml
+      # (or use kubectl set image) so the deployment uses the image built above.
+      - name: Deploy manifests
+        run: |
+          kubectl apply -n ${{ env.STUDENT_NAMESPACE }} -f k8s/stedi/

@@ -1,0 +1,61 @@
+# MySQL sink consumer — week 5. Scale with:
+#   kubectl scale deployment mysql-sink-consumer -n <your-namespace> --replicas=3
+# First create the script ConfigMap:
+#   kubectl create configmap mysql-sink-script -n <your-namespace> \
+#     --from-file=starter/app/mysql_sink_consumer.py
+# ⚠️ Teaching shortcut: pip install at container start. Real deployments bake
+# dependencies into the image.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-sink-consumer
+  namespace: <your-namespace>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-sink-consumer
+  template:
+    metadata:
+      labels:
+        app: mysql-sink-consumer
+    spec:
+      containers:
+        - name: consumer
+          image: python:3.12-slim
+          command: ["/bin/sh", "-c"]
+          args:
+            - pip install --quiet kafka-python mysql-connector-python &&
+              python /app/mysql_sink_consumer.py
+          env:
+            - name: KAFKA_BROKER
+              value: "kafka.<your-namespace>.svc.cluster.local:9092"
+            - name: KAFKA_TOPIC
+              value: "<your-topic>"
+            - name: CONSUMER_GROUP
+              value: "mysql-sink"
+            - name: MYSQL_HOST
+              value: "mysql-0.mysql.<your-namespace>.svc.cluster.local"
+            - name: MYSQL_DATABASE
+              value: "stedi"
+            - name: MYSQL_USER
+              value: "root"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: MYSQL_ROOT_PASSWORD
+          volumeMounts:
+            - name: script
+              mountPath: /app
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+      volumes:
+        - name: script
+          configMap:
+            name: mysql-sink-script

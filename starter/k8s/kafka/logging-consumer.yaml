@@ -1,0 +1,36 @@
+# Logging consumer/sink — week 4. Prints every event from the risk topic to
+# stdout so you can watch the stream with `kubectl logs -f`.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risk-logging-consumer
+  namespace: <your-namespace>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: risk-logging-consumer
+  template:
+    metadata:
+      labels:
+        app: risk-logging-consumer
+    spec:
+      containers:
+        - name: consumer
+          image: bitnami/kafka:3.9
+          command:
+            - kafka-console-consumer.sh
+            - --bootstrap-server
+            - kafka.<your-namespace>.svc.cluster.local:9092
+            - --topic
+            - <your-topic>
+            - --group
+            - risk-logging
+            - --from-beginning
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

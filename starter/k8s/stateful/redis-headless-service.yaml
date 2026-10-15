@@ -1,0 +1,15 @@
+# Headless service — gives the Redis StatefulSet pod a stable DNS name
+# (redis-stedi-0.redis-stedi.<your-namespace>.svc.cluster.local).
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-stedi
+  namespace: <your-namespace>
+spec:
+  clusterIP: None
+  selector:
+    app: redis-stedi
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
