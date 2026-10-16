@@ -19,6 +19,10 @@ migrateDatabaseJob:
 # Keep the footprint small for a shared teaching cluster
 workers:
   replicas: 1
+  # With LocalExecutor the scheduler inherits this setting; without it the chart
+  # demands a logs PVC that fails on the shared SSD_TOTAL_GB quota
+  persistence:
+    enabled: false
 
 # Disk quota on the shared cluster is tight (SSD_TOTAL_GB); logs stay on
 # emptyDir instead of persistent SSD volumes.
