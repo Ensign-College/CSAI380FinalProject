@@ -44,11 +44,12 @@ dagProcessor:
         memory: 128Mi
 
 scheduler:
-  # LocalExecutor runs tasks inside the scheduler — give it a bit more than the rest
+  # LocalExecutor runs tasks inside the scheduler; 250m/512Mi is enough for the course DAG
+  # and still fits the quota-capped sandbox nodes
   resources:
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: 250m
+      memory: 512Mi
   logGroomerSidecar:
     resources:
       requests:
