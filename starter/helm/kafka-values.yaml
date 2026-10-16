@@ -7,6 +7,11 @@
 
 controller:
   replicaCount: 1
+  # Persistence lives under controller (KRaft chart) — a top-level `persistence:` block is silently ignored.
+  # Small volume so topics survive pod restarts without eating shared disk quota.
+  persistence:
+    enabled: true
+    size: 2Gi
 
 listeners:
   client:
@@ -15,8 +20,3 @@ listeners:
     protocol: PLAINTEXT
   interbroker:
     protocol: PLAINTEXT
-
-# Small persistent volume so topics survive pod restarts
-persistence:
-  enabled: true
-  size: 2Gi
