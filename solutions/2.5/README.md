@@ -1,6 +1,6 @@
 # 2.5 Saving the Data — Teacher Notes
 
-> Exercise status: 🚧 DRAFT — gotchas below are preliminary and will be expanded during verification testing.
+> Exercise status: ✅ VERIFIED 2026-10-15 against autopilot-cluster-1 / helpful-ally-451215-a3 (namespace verify-stedi).
 
 ## Solutions
 
@@ -62,3 +62,5 @@ kubectl delete -f k8s/stateful/mysql-loadbalancer-dev.yaml -n <ns>   # cleanup!
 - **LoadBalancer takes several minutes.** `EXTERNAL-IP <pending>` is normal for 2–5 min; students often assume failure and re-apply.
 - **Deleting the StatefulSet does not delete PVCs.** Useful for recovery demos, but students re-testing from scratch must `kubectl delete pvc` explicitly or old passwords/data linger.
 - **Workbench 8.x may reject the connection with caching_sha2_password errors** on older Workbench versions; upgrading Workbench is simpler than changing the MySQL auth plugin.
+- **`kubectl wait` races the StatefulSet controller (hit during verification).** Right after `kubectl delete pod mysql-0`, `kubectl wait` can fail with `pods "mysql-0" not found` because the replacement pod hasn't been created yet. Fix: `sleep 10-15` (or retry the wait) before waiting on readiness.
+- **MySQL needs ~20s after Ready before accepting connections** — an immediate `kubectl exec ... mysql` after the pod goes Ready can get `ERROR 2013 Lost connection`; retry briefly.

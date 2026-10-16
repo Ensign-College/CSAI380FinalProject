@@ -32,6 +32,7 @@ spec:
                 secretKeyRef:
                   name: redis-secrets
                   key: REDIS_PASS
+                  optional: true   # secret is created in week 2
             # Kafka wiring is completed in week 4 (4.5 Streaming or Micro-batches).
             - name: KAFKA_BROKER
               value: "localhost:9092"
