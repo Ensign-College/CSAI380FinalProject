@@ -6,6 +6,16 @@
 
 executor: LocalExecutor
 
+# Run migrations as a regular Job, not a Helm hook — with hooks + `helm --wait` the
+# migrations never run and every component crash-loops waiting for them
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
 # Keep the footprint small for a shared teaching cluster
 workers:
   replicas: 1
@@ -16,8 +26,44 @@ logs:
   persistence:
     enabled: false
 triggerer:
+  enabled: false # no deferrable operators in this project — saves a whole pod of CPU/memory quota
   persistence:
     enabled: false
+
+# Small requests — a handful of course DAGs; chart defaults strand pods Pending on full sandbox nodes.
+# Sidecars must be sized explicitly: GKE Autopilot defaults unspecified containers to 500m/2Gi.
+dagProcessor:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  logGroomerSidecar:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+scheduler:
+  # LocalExecutor runs tasks inside the scheduler; 250m/512Mi is enough for the course DAG
+  # and still fits the quota-capped sandbox nodes
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  logGroomerSidecar:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+apiServer:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+statsd:
+  enabled: false # not needed for the project; saves sandbox quota
 
 # Shrink the metadata DB volume (chart default is 8Gi) — shared disk quota
 postgresql:
@@ -36,6 +82,10 @@ dags:
     branch: main
     subPath: dags
     period: 60s
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
 
 # Extra pip packages the ETL DAG needs
 extraPipPackages:
