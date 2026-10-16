@@ -42,8 +42,23 @@ This repository contains prototype Skill Practice assignments for CSAI 380 (AI O
 - The application referenced throughout these exercises is the **stedi-private** project located adjacent to this repository (`../stedi-private`). It is the source of truth for environment variable names (`REDIS_HOST`, `REDIS_PASSWORD`, `KAFKA_BROKER`, `KAFKA_RISK_TOPIC`), the `/simulation` toggle endpoints, the listening port (4567), and deployment patterns (`app.yaml`).
 - When authoring or changing exercises that involve the STEDI codebase — which image students deploy, what parts of stedi-private get copied into `starter/`, how it participates in a given week's project stage — **prompt the user for a decision** rather than assuming. Its code and configuration may change independently of this repo.
 
+## AI Ops dual thread
+
+Every assignment must reinforce **AI Ops in both senses**, each week:
+
+- **(a) AI as operator** — how students can use an AI agent (and agent loops: prompt → inspect → verify against the real system → re-prompt) to help with that week's steps, with the standing rule that students verify agent output before acting on it and are accountable for everything they apply.
+- **(b) AI as the customer** — why that week's skill matters for infrastructure that supports AI operations (model serving, feature stores, training/data pipelines, real-time scoring, feature staleness, etc.).
+
+Mechanically, each assignment carries:
+
+- An `## AI Ops in This Assignment:` section between `## Purpose:` and `## Instructions:` covering both senses with week-specific content.
+- A required **AI Ops reflection** in the week's evidence file: one verified agent-assisted step (prompt, output, verification) plus a week-specific AI-relevance question.
+- Rubric coverage: the AI Ops reflection is graded inside the third criterion.
+
+New or revised assignments must keep all three elements.
+
 ## Conventions
 
-- Assignments follow the W26 Canvas template: `# N.4 Title`, `## Purpose:`, `## Instructions:`, `## Grading` with a 15-point rubric (three criteria at 5/3/1/0).
+- Assignments follow the W26 Canvas template: `# N.4 Title`, `## Purpose:`, `## AI Ops in This Assignment:`, `## Instructions:`, `## Grading` with a 15-point rubric (three criteria at 5/3/1/0).
 - All student work is submitted as a GitHub repository link; exercises must keep the IaC + GitHub Actions thread consistent week to week.
 - Flat file naming in repo root: `N.4-<slug>.md`.
