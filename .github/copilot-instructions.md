@@ -25,6 +25,7 @@ This repository contains prototype Skill Practice assignments for CSAI 380 (AI O
 
 ## Security rules for starter content
 
+- **Never touch the `default` namespace.** It contains real (non-exercise) workloads and data. All exercise and verification resources live in dedicated namespaces (e.g., the student's username namespace, `verify-stedi`); never deploy to, scale, or delete anything in `default`.
 - Never commit credentials, service-account keys, tokens, or `.tfstate` files — the starter `.gitignore` must cover these.
 - Secrets in manifests must use `secretKeyRef` / GitHub Actions secrets; never inline passwords, even as examples.
 - Anything insecure-by-design for teaching (single-node MySQL, public load balancer) must say so explicitly in the exercise text.
@@ -46,8 +47,8 @@ This repository contains prototype Skill Practice assignments for CSAI 380 (AI O
 
 Every assignment must reinforce **AI Ops in both senses**, each week:
 
-- **(a) AI as operator** — how students can use an AI agent (and agent loops: prompt → inspect → verify against the real system → re-prompt) to help with that week's steps, with the standing rule that students verify agent output before acting on it and are accountable for everything they apply.
-- **(b) AI as the customer** — why that week's skill matters for infrastructure that supports AI operations (model serving, feature stores, training/data pipelines, real-time scoring, feature staleness, etc.).
+- **(a) Use an agent to do the ops** — how students can use an AI agent (and agent loops: prompt → inspect → verify against the real system → re-prompt) to help with that week's steps, with the standing rule that students verify agent output before acting on it and are accountable for everything they apply.
+- **(b) Build infrastructure that AI operations run on** — why that week's skill matters for infrastructure that supports AI operations (model serving, feature stores, training/data pipelines, real-time scoring, feature staleness, etc.).
 
 Mechanically, each assignment carries:
 
