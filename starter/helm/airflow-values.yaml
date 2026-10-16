@@ -10,6 +10,21 @@ executor: LocalExecutor
 workers:
   replicas: 1
 
+# Disk quota on the shared cluster is tight (SSD_TOTAL_GB); logs stay on
+# emptyDir instead of persistent SSD volumes.
+logs:
+  persistence:
+    enabled: false
+triggerer:
+  persistence:
+    enabled: false
+
+# Shrink the metadata DB volume (chart default is 8Gi) — shared disk quota
+postgresql:
+  primary:
+    persistence:
+      size: 2Gi
+
 webserverSecretKeySecretName: airflow-webserver-secret   # create with kubectl, see 3.5 instructions
 
 dags:
