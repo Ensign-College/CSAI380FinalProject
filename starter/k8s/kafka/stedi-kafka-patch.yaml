@@ -17,6 +17,9 @@ spec:
             # Bitnami chart service DNS: <release>.<namespace>.svc.cluster.local:9092
             - name: KAFKA_BROKER
               value: "kafka.<your-namespace>.svc.cluster.local:9092"
+            # Allows starting the simulator from the timer page or POST /simulation
+            - name: ENABLE_SIMULATION_MODE
+              value: "true"
             # TODO(student): add the KAFKA_STEDI_EVENTS_TOPIC environment variable
             # and set it to the topic you created in step 3 of assignment 4.5.
             # (KAFKA_RISK_TOPIC is the topic STEDI reads from; it does not change
