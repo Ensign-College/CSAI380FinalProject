@@ -1,6 +1,6 @@
 # 2.5 Saving the Data — Teacher Notes
 
-> Exercise status: ✅ VERIFIED 2026-10-15 against autopilot-cluster-1 / helpful-ally-451215-a3 (namespace verify-stedi).
+> Exercise status: ✅ VERIFIED 2026-10-15 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify-stedi).
 
 ## Solutions
 
