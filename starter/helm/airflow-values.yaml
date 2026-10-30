@@ -16,15 +16,15 @@ migrateDatabaseJob:
       cpu: 100m
       memory: 256Mi
 
-# Keep the footprint small for a shared teaching cluster
+# Keep the footprint small to stay within your project's quota
 workers:
   replicas: 1
   # With LocalExecutor the scheduler inherits this setting; without it the chart
-  # demands a logs PVC that fails on the shared SSD_TOTAL_GB quota
+  # demands a logs PVC that fails on your project's SSD_TOTAL_GB quota
   persistence:
     enabled: false
 
-# Disk quota on the shared cluster is tight (SSD_TOTAL_GB); logs stay on
+# Your project's disk quota is tight (SSD_TOTAL_GB); logs stay on
 # emptyDir instead of persistent SSD volumes.
 logs:
   persistence:
@@ -69,7 +69,7 @@ apiServer:
 statsd:
   enabled: false # not needed for the project; saves sandbox quota
 
-# Shrink the metadata DB volume (chart default is 8Gi) — shared disk quota
+# Shrink the metadata DB volume (chart default is 8Gi) — limited disk quota
 postgresql:
   primary:
     persistence:

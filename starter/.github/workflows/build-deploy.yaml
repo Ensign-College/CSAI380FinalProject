@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGION: us-central1
+  REGION: us-east1
   STUDENT_NAMESPACE: <your-namespace>
   IMAGE_NAME: stedi
 

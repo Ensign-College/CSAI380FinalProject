@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "GCP region for Artifact Registry and GCS"
   type        = string
-  default     = "us-central1"
+  default     = "us-east1"
 }
 
 variable "student_namespace" {
