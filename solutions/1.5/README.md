@@ -1,6 +1,6 @@
 # 1.5 Collecting the Data — Teacher Notes
 
-> Exercise status: ✅ VERIFIED 2026-10-29 against autopilot-cluster-1 / helpful-ally-451215-a3 (namespace verify15-stedi), STEDI from the STEDI-Balance/stedi-web ZIP, registry and bucket in us-east1. Previously verified 2026-10-15 (namespace verify-stedi).
+> Exercise status: ✅ VERIFIED 2026-10-29 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify15-stedi), STEDI from the STEDI-Balance/stedi-web ZIP, registry and bucket in us-east1. Previously verified 2026-10-15 (namespace verify-stedi).
 
 ## Solutions
 
