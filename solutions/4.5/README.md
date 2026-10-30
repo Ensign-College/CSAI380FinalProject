@@ -53,6 +53,8 @@ STEDI risk events are **streaming**: events are produced continuously as users c
 - **Patch replaces the whole env list?** No — a strategic-merge patch on a named container merges env entries, but if students hand-edit and re-apply the full deployment they may clobber week-2 Redis env vars. Check `kubectl get deploy stedi -o yaml` after patching.
 - **Events go to `stedi-events`, not `customer-risk`.** STEDI log says `Sending to Kafka Topic: stedi-events`: the patch set `KAFKA_RISK_TOPIC` (consume side) instead of `KAFKA_STEDI_EVENTS_TOPIC`, or the image predates October 2026. Fix the variable or rebuild from current stedi-web.
 - **Scoring fails with `ERR unknown command 'JSON.GET'`, no events sent.** `redis-stedi` still runs `redis:7`; change it to `redis:8` (current 2.5 starter) and re-apply.
+- **`POST /simulation` returns 403, or the timer page toggle flips back off** ("Simulation mode is disabled on this server"). The patch's `ENABLE_SIMULATION_MODE=true` is missing or wasn't applied; check `kubectl get deploy stedi -o yaml | grep -A1 ENABLE_SIMULATION_MODE`.
+- **Toggle off but `GET /simulation` still `true`.** Stopping waits for the current pass through the customers (up to about a minute); the switch updates before the server does.
 - **Simulation produces nothing** if STEDI cannot reach Redis — the simulation creates users/sessions through the same code paths; verify week-2 services are still healthy first.
 - **DNS name differs if the Helm release isn't `kafka`** — service is `<release>.<ns>.svc.cluster.local`; students who ran `helm install my-kafka ...` must adjust every bootstrap-server string.
 - **`--from-beginning` floods with old dummy events** during the STEDI demo; drop the flag when capturing "live" evidence.
