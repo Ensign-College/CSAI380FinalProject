@@ -33,7 +33,7 @@ gcloud auth application-default print-access-token >/dev/null && echo "Terraform
 | Setting | Value |
 | --- | --- |
 | GCP project | `helpful-ally-451215-a3` |
-| Region | `us-central1` |
+| Region | `us-east1` for new clusters and resources (the student default). The existing shared verification cluster below is in `us-central1`. |
 | Shared verification cluster | `autopilot-cluster-1` (GKE Autopilot) |
 | Login | `gcloud auth login` and `gcloud auth application-default login` |
 
