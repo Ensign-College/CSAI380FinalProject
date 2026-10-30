@@ -9,40 +9,39 @@ These rules apply to **every agent and person** working in this repository (Clau
 - **We only publish exercises that we have tested and verified actually work.** An exercise is not done until every command, manifest, Terraform configuration, workflow, and DAG in it has been executed successfully against a real GKE/GCP environment.
 - Every assignment file (`N.4-*.md`) must carry a status banner immediately below its title:
   - `🚧 DRAFT — not yet tested end-to-end` — instructions written, verification pending.
-  - `✅ VERIFIED <YYYY-MM-DD>` — every step executed successfully; include the date and the environment (cluster/GCP project) it was verified against.
+  - `✅ VERIFIED <YYYY-MM-DD>` — every step executed successfully; include the date and a generic description of the environment (for example, "Vocareum-provided GCP project, student-created GKE Autopilot cluster in us-east1").
 - Never flip a banner to VERIFIED without actually running the steps. Never remove a DRAFT banner as part of an unrelated edit.
 - When an exercise changes, its status reverts to DRAFT until the change has been tested.
 - **You must test every change after making it.** After you edit an exercise, its starter files, or its solutions, execute the changed steps (and any later steps that depend on them) against a real GKE/GCP environment before you consider the change done. Leaving a changed exercise untested in DRAFT is not a substitute for testing it.
-- If the re-test passes, update the banner to `✅ VERIFIED <YYYY-MM-DD>` with the environment. If you cannot run the test (for example, missing credentials or quota), say so explicitly, leave the banner at DRAFT, and note what still needs to be tested.
+- If the re-test passes, update the banner to `✅ VERIFIED <YYYY-MM-DD>` with a generic environment description. If you cannot run the test (for example, missing credentials or quota), say so explicitly, leave the banner at DRAFT, and note what still needs to be tested.
 
 ## Test environment and procedure
 
-Testing is how an exercise earns `✅ VERIFIED`. Every agent working in this repository (Claude Code, Copilot, or other) follows this procedure.
+Testing is how an exercise earns `✅ VERIFIED`. Every agent and person working in this repository follows this procedure.
 
-**1. Before editing, check that you can test.** Run the preflight below. If any tool is missing, a credential fails, or the project is unreachable, **stop and ask the user** before making changes.
+**1. Before editing, check that you can test.** Run the preflight below. If any tool is missing, a credential fails, or no test project is set, **stop and ask the user** before making changes.
 
 ```bash
 gcloud --version && terraform version && kubectl version --client && docker version && helm version
-gcloud config get-value project          # expect the test project below
+gcloud config get-value project          # confirm with the user that this is the project to test in
 gcloud auth print-access-token >/dev/null && echo "gcloud auth OK"
 gcloud auth application-default print-access-token >/dev/null && echo "Terraform (ADC) auth OK"
 ```
 
-**2. Test environment.**
+**2. Test environment: work the way a student does.**
 
-| Setting | Value |
-| --- | --- |
-| GCP project | `helpful-ally-451215-a3` |
-| Region | `us-east1` for new clusters and resources (the student default). The existing shared verification cluster below is in `us-central1`. |
-| Shared verification cluster | `autopilot-cluster-1` (GKE Autopilot) |
-| Login | `gcloud auth login` and `gcloud auth application-default login` |
+Each student receives their own unique GCP project from Vocareum and creates their own GKE Autopilot cluster in 1.4. Test the same way:
 
+- **Never assume a GCP project ID or cluster name.** Don't use one remembered from an earlier session, a status banner, or teacher notes. Ask the user which Vocareum-provided (or equivalent instructor) project to test in, and confirm it with `gcloud config get-value project`.
+- **Never write a real project ID, cluster name, account, or billing ID** into exercises, starter files, teacher notes, or these rules. These repositories are public. Use placeholders such as `<your-project-id>` and `<cluster-name>`.
+- **Region:** `us-east1`, the student default.
+- **Cluster:** use a cluster created with the 1.4 Part One commands. Ask the user whether an existing test cluster may be reused; otherwise create a **temporary** one (for example `verify-<YYYYMMDD>`) and delete it when you finish.
+- **Login:** `gcloud auth login` and `gcloud auth application-default login`.
 - Run each exercise in its own verification namespace (for example `verify-1-4`, `verify-stedi`), never in `default`.
-- Students create their own cluster in 1.4, so testing a change to cluster creation means creating a **temporary** Autopilot cluster (for example `verify-<YYYYMMDD>`) with the exercise's commands, then deleting it.
 
 **3. Run the changed steps exactly as written for students,** plus every later step that depends on them. Use the student-facing commands and starter files, replacing only `<angle-bracket>` placeholders. If an exercise has a test script (`scripts/verify-N.N.sh`), run it; when you verify an exercise by hand, consider adding one.
 
-**4. Record the result.** On success, update the status banner to `✅ VERIFIED <YYYY-MM-DD>` with the cluster and project, update the `README.md` table, and add any new gotchas to the teacher notes. On failure, fix and re-test. If you could not test, leave DRAFT and state in your final message what still needs testing.
+**4. Record the result.** On success, update the status banner to `✅ VERIFIED <YYYY-MM-DD>` with a generic environment description (no project IDs or cluster names), update the `README.md` table, and add any new gotchas to the teacher notes. On failure, fix and re-test. If you could not test, leave DRAFT and state in your final message what still needs testing.
 
 **5. Clean up.** Delete temporary clusters and verification resources, or scale verification namespaces to zero, unless the user asks to keep them.
 
@@ -62,7 +61,7 @@ gcloud auth application-default print-access-token >/dev/null && echo "Terraform
 
 ## Security rules for starter content
 
-- **Never touch the `default` namespace.** It contains real (non-exercise) workloads and data. All exercise and verification resources live in dedicated namespaces (e.g., the student's username namespace, `verify-stedi`); never deploy to, scale, or delete anything in `default`.
+- **Never touch the `default` namespace.** In an instructor or shared cluster it may hold real (non-exercise) workloads and data. All exercise and verification resources live in dedicated namespaces (e.g., the student's username namespace, `verify-stedi`); never deploy to, scale, or delete anything in `default`.
 - Never commit credentials, service-account keys, tokens, or `.tfstate` files — the starter `.gitignore` must cover these.
 - Secrets in manifests must use `secretKeyRef` / GitHub Actions secrets; never inline passwords, even as examples.
 - Anything insecure-by-design for teaching (single-node MySQL, public load balancer) must say so explicitly in the exercise text.
