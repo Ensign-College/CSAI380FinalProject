@@ -13,6 +13,39 @@ This repository contains prototype Skill Practice assignments for CSAI 380 (AI O
 - **You must test every change after making it.** After you edit an exercise, its starter files, or its solutions, execute the changed steps (and any later steps that depend on them) against a real GKE/GCP environment before you consider the change done. Leaving a changed exercise untested in DRAFT is not a substitute for testing it.
 - If the re-test passes, update the banner to `✅ VERIFIED <YYYY-MM-DD>` with the environment. If you cannot run the test (for example, missing credentials or quota), say so explicitly, leave the banner at DRAFT, and note what still needs to be tested.
 
+## Test environment and procedure
+
+Testing is how an exercise earns `✅ VERIFIED`. Every agent working in this repository (Claude Code, Copilot, or other) follows this procedure.
+
+**1. Before editing, check that you can test.** Run the preflight below. If any tool is missing, a credential fails, or the project is unreachable, **stop and ask the user** before making changes.
+
+```bash
+gcloud --version && terraform version && kubectl version --client && docker version && helm version
+gcloud config get-value project          # expect the test project below
+gcloud auth print-access-token >/dev/null && echo "gcloud auth OK"
+gcloud auth application-default print-access-token >/dev/null && echo "Terraform (ADC) auth OK"
+```
+
+**2. Test environment.**
+
+| Setting | Value |
+| --- | --- |
+| GCP project | `helpful-ally-451215-a3` |
+| Region | `us-central1` |
+| Shared verification cluster | `autopilot-cluster-1` (GKE Autopilot) |
+| Login | `gcloud auth login` and `gcloud auth application-default login` |
+
+- Run each exercise in its own verification namespace (for example `verify-1-4`, `verify-stedi`), never in `default`.
+- Students create their own cluster in 1.4, so testing a change to cluster creation means creating a **temporary** Autopilot cluster (for example `verify-<YYYYMMDD>`) with the exercise's commands, then deleting it.
+
+**3. Run the changed steps exactly as written for students,** plus every later step that depends on them. Use the student-facing commands and starter files, replacing only `<angle-bracket>` placeholders. If an exercise has a test script (`scripts/verify-N.N.sh`), run it; when you verify an exercise by hand, consider adding one.
+
+**4. Record the result.** On success, update the status banner to `✅ VERIFIED <YYYY-MM-DD>` with the cluster and project, update the `README.md` table, and add any new gotchas to the teacher notes. On failure, fix and re-test. If you could not test, leave DRAFT and state in your final message what still needs testing.
+
+**5. Clean up.** Delete temporary clusters and verification resources, or scale verification namespaces to zero, unless the user asks to keep them.
+
+**6. Don't push or merge untested changes** to `main` in this repository or the starter repos; ask the user first.
+
 ## Starter files
 
 - Every file an exercise tells students to use, copy, or complete **must exist in this repository** under `starter/`, which mirrors the layout of the student repository:
@@ -43,8 +76,8 @@ This repository contains prototype Skill Practice assignments for CSAI 380 (AI O
 
 ## The STEDI application
 
-- The application referenced throughout these exercises is the **stedi-private** project located adjacent to this repository (`../stedi-private`). It is the source of truth for environment variable names (`REDIS_HOST`, `REDIS_PASSWORD`, `KAFKA_BROKER`, `KAFKA_RISK_TOPIC`), the `/simulation` toggle endpoints, the listening port (4567), and deployment patterns (`app.yaml`).
-- When authoring or changing exercises that involve the STEDI codebase — which image students deploy, what parts of stedi-private get copied into `starter/`, how it participates in a given week's project stage — **prompt the user for a decision** rather than assuming. Its code and configuration may change independently of this repo.
+- Students get the STEDI application from the public [STEDI-Balance/stedi-web](https://github.com/STEDI-Balance/stedi-web) repository (1.5 step 2). Test exercises against that code, not a private copy. It is the source of truth for environment variable names (`REDIS_HOST`, `REDIS_PASSWORD`, `KAFKA_BROKER`, `KAFKA_RISK_TOPIC`), the `/simulation` toggle endpoints, the listening port (4567), and deployment patterns (`app.yaml`).
+- When authoring or changing exercises that involve the STEDI codebase — which image students deploy, what parts of stedi-web get copied into `starter/`, how it participates in a given week's project stage — **prompt the user for a decision** rather than assuming. Its code and configuration may change independently of this repo.
 
 ## AI Ops dual thread
 
