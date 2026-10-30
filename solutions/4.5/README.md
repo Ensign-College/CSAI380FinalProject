@@ -4,16 +4,16 @@
 
 ## Solutions
 
-### Patch TODO — `KAFKA_RISK_TOPIC`
+### Patch TODO — `KAFKA_STEDI_EVENTS_TOPIC`
 
 Completed patch in [stedi-kafka-patch.yaml](stedi-kafka-patch.yaml); the added variable:
 
 ```yaml
-            - name: KAFKA_RISK_TOPIC
+            - name: KAFKA_STEDI_EVENTS_TOPIC
               value: "customer-risk"
 ```
 
-`customer-risk` matches the default in stedi-private's `env.list`; `KafkaProducerUtil` reads `KAFKA_BROKER` from the environment.
+`KAFKA_STEDI_EVENTS_TOPIC` (added to stedi-web 2026-10-29, default `stedi-events`) is the topic STEDI publishes risk events to. `KAFKA_RISK_TOPIC` is the topic STEDI *consumes*, so setting it alone sends nothing to `customer-risk`. `KafkaProducerUtil` reads `KAFKA_BROKER` from the environment.
 
 ### Command transcript
 
@@ -51,6 +51,8 @@ STEDI risk events are **streaming**: events are produced continuously as users c
 - **Bitnami chart renamed broker values to `controller.*`** in the KRaft era; older tutorials that set `replicaCount` at the top level silently deploy defaults (chart key renames).
 - **Consumer says `LEADER_NOT_AVAILABLE` right after install** — Kafka takes a minute to elect; retry rather than reinstalling.
 - **Patch replaces the whole env list?** No — a strategic-merge patch on a named container merges env entries, but if students hand-edit and re-apply the full deployment they may clobber week-2 Redis env vars. Check `kubectl get deploy stedi -o yaml` after patching.
+- **Events go to `stedi-events`, not `customer-risk`.** STEDI log says `Sending to Kafka Topic: stedi-events`: the patch set `KAFKA_RISK_TOPIC` (consume side) instead of `KAFKA_STEDI_EVENTS_TOPIC`, or the image predates October 2026. Fix the variable or rebuild from current stedi-web.
+- **Scoring fails with `ERR unknown command 'JSON.GET'`, no events sent.** `redis-stedi` still runs `redis:7`; change it to `redis:8` (current 2.5 starter) and re-apply.
 - **Simulation produces nothing** if STEDI cannot reach Redis — the simulation creates users/sessions through the same code paths; verify week-2 services are still healthy first.
 - **DNS name differs if the Helm release isn't `kafka`** — service is `<release>.<ns>.svc.cluster.local`; students who ran `helm install my-kafka ...` must adjust every bootstrap-server string.
 - **`--from-beginning` floods with old dummy events** during the STEDI demo; drop the flag when capturing "live" evidence.

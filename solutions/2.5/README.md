@@ -1,6 +1,6 @@
 # 2.5 Saving the Data — Teacher Notes
 
-> Exercise status: ✅ VERIFIED 2026-10-15 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify-stedi).
+> Exercise status: 🚧 DRAFT — Redis image changed 2026-10-29 to `redis:8`; needs a GKE run. Previously: ✅ VERIFIED 2026-10-15 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify-stedi).
 
 ## Solutions
 
@@ -55,6 +55,8 @@ kubectl delete -f k8s/stateful/mysql-loadbalancer-dev.yaml -n <ns>   # cleanup!
 ```
 
 ## Gotchas
+
+- **STEDI step tests fail with `ERR unknown command 'JSON.GET'`.** STEDI stores and scores balance tests with RedisJSON, which `redis:7` lacks. The starter moved to `redis:8` on 2026-10-29. Students on `redis:7` change the image and re-apply; the existing volume upgrades in place (tested locally: a Redis 7 AOF volume opened in Redis 8 with data intact).
 
 - **PVC stuck `Pending`.** Symptom: pod `Pending`, PVC event `waiting for first consumer` or no default StorageClass. Fix: GKE's `standard-rwo` is default; if the cluster was customized, add `storageClassName: standard-rwo` to the claim.
 - **Redis AOF + no PVC = silent data loss.** If students skip the volumeClaimTemplates TODO, Redis still starts and the test key vanishes after delete — that is the intended lesson, but check they noticed.

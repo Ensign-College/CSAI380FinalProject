@@ -1,6 +1,6 @@
 # 1.5 Collecting the Data — Teacher Notes
 
-> Exercise status: ✅ VERIFIED 2026-10-29 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify15-stedi), STEDI from the STEDI-Balance/stedi-web ZIP, registry and bucket in us-east1. Previously verified 2026-10-15 (namespace verify-stedi).
+> Exercise status: 🚧 DRAFT — step 5.2 changed 2026-10-29 (reuse the 1.4 key, add `roles/container.developer`); needs a live Actions run. Previously: ✅ VERIFIED 2026-10-29 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify15-stedi), STEDI from the STEDI-Balance/stedi-web ZIP, registry and bucket in us-east1. Previously verified 2026-10-15 (namespace verify-stedi).
 
 ## Solutions
 
@@ -28,6 +28,21 @@ Replace the `Deploy manifests` step's run block with:
     kubectl set image deployment/stedi -n ${{ env.STUDENT_NAMESPACE }} \
       stedi=${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.STUDENT_NAMESPACE }}-images/${{ env.IMAGE_NAME }}:${{ github.sha }}
     kubectl rollout status deployment/stedi -n ${{ env.STUDENT_NAMESPACE }}
+```
+
+### Secrets (step 5.2)
+
+Changed 2026-10-29: students reuse the `github-actions` service account and key from 1.4 Part Five and grant it deploy rights:
+
+```bash
+PROJECT_ID=$(gcloud config get-value project)
+SA=github-actions@$PROJECT_ID.iam.gserviceaccount.com
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:$SA" --role=roles/container.developer --condition=None
+gh secret set GCP_SA_KEY < ~/.csai380/github-actions-key.json
+gh secret set GCP_PROJECT_ID --body "$PROJECT_ID"
+gh secret set GKE_CLUSTER --body "<cluster-name>"
+gh secret set GKE_REGION --body "us-east1"
 ```
 
 ### Command sequence
@@ -58,6 +73,9 @@ flowchart LR
 ```
 
 ## Gotchas
+
+- **Deploy step fails with `Forbidden` / `container.deployments.get` (step 5.2).** The service account has only `roles/artifactregistry.writer` from 1.4; the build and push succeed, then `kubectl apply` is denied. Fix: grant `roles/container.developer` as in step 5.2.
+- **`get-gke-credentials` can't find the cluster.** `GKE_CLUSTER`/`GKE_REGION` secrets don't match the cluster from 1.4 (check `gcloud container clusters list`).
 
 - **Apple Silicon images crash on amd64 nodes.** Symptom: pod in `CrashLoopBackOff` with `exec format error` in logs. Fix: the workflow already passes `--platform linux/amd64`; students building locally must do the same.
 - **`terraform apply` fails on the kubernetes provider.** Symptom: `connection refused` to localhost:80. Fix: run `gcloud container clusters get-credentials <cluster> --region <region>` first so `~/.kube/config` exists.
