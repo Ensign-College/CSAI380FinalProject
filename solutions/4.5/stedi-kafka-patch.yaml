@@ -11,6 +11,8 @@ spec:
           env:
             - name: KAFKA_BROKER
               value: "kafka.<your-namespace>.svc.cluster.local:9092"
+            - name: ENABLE_SIMULATION_MODE
+              value: "true"
             # Solution to TODO(student): matches the topic created in step 3
             - name: KAFKA_STEDI_EVENTS_TOPIC
               value: "customer-risk"
