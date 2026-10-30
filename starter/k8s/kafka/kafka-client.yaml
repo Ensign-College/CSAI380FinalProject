@@ -10,7 +10,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: kafka-client
-      image: bitnami/kafka:3.9
+      image: bitnamilegacy/kafka:4.0.0-debian-12-r10   # docker.io/bitnami tags were removed in 2025; same Kafka as the broker
       command: ["sleep", "infinity"]
       resources:
         requests:

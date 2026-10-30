@@ -1,6 +1,6 @@
 # 2.5 Saving the Data — Teacher Notes
 
-> Exercise status: 🚧 DRAFT — Redis image changed 2026-10-29 to `redis:8`; needs a GKE run. Previously: ✅ VERIFIED 2026-10-15 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify-stedi).
+> Exercise status: ✅ VERIFIED 2026-10-30 against a temporary GKE Autopilot cluster in us-east1 (instructor test project, namespace verify15-stedi): Redis 8 with RedisJSON loaded, MySQL, STEDI sign-up/login, persistence of a row, a key, and a JSON value across pod deletion. Workbench step last verified 2026-10-15.
 
 ## Solutions
 
@@ -56,7 +56,8 @@ kubectl delete -f k8s/stateful/mysql-loadbalancer-dev.yaml -n <ns>   # cleanup!
 
 ## Gotchas
 
-- **STEDI step tests fail with `ERR unknown command 'JSON.GET'`.** STEDI stores and scores balance tests with RedisJSON, which `redis:7` lacks. The starter moved to `redis:8` on 2026-10-29. Students on `redis:7` change the image and re-apply; the existing volume upgrades in place (tested locally: a Redis 7 AOF volume opened in Redis 8 with data intact).
+- **STEDI step tests fail with `ERR unknown command 'JSON.GET'`.** STEDI stores and scores balance tests with RedisJSON, which `redis:7` lacks. The starter moved to `redis:8` on 2026-10-29. Students on `redis:7` change the image (and the `command` below) and re-apply; the existing volume upgrades in place (verified 2026-10-30 on GKE: key and JSON value survived).
+- **`redis:8` alone still has no RedisJSON in Kubernetes (found 2026-10-30).** The image loads its modules from its entrypoint script, and a container `command` replaces the entrypoint, so `MODULE LIST` shows only `vectorset`. The starter therefore loads it explicitly: `--loadmodule /usr/local/lib/redis/modules/rejson.so`. Do **not** switch `command` to `args` to get the entrypoint back: the entrypoint then runs Redis as the `redis` user but refuses to chown a GKE PVC that contains `lost+found` ("Unknown file './lost+found' found in data dir"), and Redis crash-loops with `Can't open the temporary manifest file appendonlydir/temp-appendonly.aof.manifest: Permission denied`.
 
 - **PVC stuck `Pending`.** Symptom: pod `Pending`, PVC event `waiting for first consumer` or no default StorageClass. Fix: GKE's `standard-rwo` is default; if the cluster was customized, add `storageClassName: standard-rwo` to the claim.
 - **Redis AOF + no PVC = silent data loss.** If students skip the volumeClaimTemplates TODO, Redis still starts and the test key vanishes after delete — that is the intended lesson, but check they noticed.

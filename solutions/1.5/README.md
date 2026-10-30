@@ -1,6 +1,6 @@
 # 1.5 Collecting the Data — Teacher Notes
 
-> Exercise status: 🚧 DRAFT — step 5.2 changed 2026-10-29 (reuse the 1.4 key, add `roles/container.developer`); needs a live Actions run. Previously: ✅ VERIFIED 2026-10-29 against a GKE Autopilot cluster (us-central1) in an instructor test project (namespace verify15-stedi), STEDI from the STEDI-Balance/stedi-web ZIP, registry and bucket in us-east1. Previously verified 2026-10-15 (namespace verify-stedi).
+> Exercise status: ✅ VERIFIED 2026-10-30 against a temporary GKE Autopilot cluster in us-east1 (instructor test project, namespace verify15-stedi). Workflow steps executed with only the 1.4 `github-actions` key plus the step 5.2 `roles/container.developer` grant; a live Actions run was not performed.
 
 ## Solutions
 
