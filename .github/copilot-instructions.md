@@ -9,7 +9,9 @@ This repository contains prototype Skill Practice assignments for CSAI 380 (AI O
   - `🚧 DRAFT — not yet tested end-to-end` — instructions written, verification pending.
   - `✅ VERIFIED <YYYY-MM-DD>` — every step executed successfully; include the date and the environment (cluster/GCP project) it was verified against.
 - Never flip a banner to VERIFIED without actually running the steps. Never remove a DRAFT banner as part of an unrelated edit.
-- When an exercise changes, its status reverts to DRAFT until re-tested.
+- When an exercise changes, its status reverts to DRAFT until the change has been tested.
+- **You must test every change after making it.** After you edit an exercise, its starter files, or its solutions, execute the changed steps (and any later steps that depend on them) against a real GKE/GCP environment before you consider the change done. Leaving a changed exercise untested in DRAFT is not a substitute for testing it.
+- If the re-test passes, update the banner to `✅ VERIFIED <YYYY-MM-DD>` with the environment. If you cannot run the test (for example, missing credentials or quota), say so explicitly, leave the banner at DRAFT, and note what still needs to be tested.
 
 ## Starter files
 
