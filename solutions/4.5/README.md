@@ -1,6 +1,6 @@
 # 4.5 Streaming or Micro-batches — Teacher Notes
 
-> Exercise status: 🚧 DRAFT — gotchas below are preliminary and will be expanded during verification testing.
+> Exercise status: ✅ VERIFIED 2026-10-30 against a temporary GKE Autopilot cluster in us-east1 (instructor test project, namespace verify15-stedi): starter Kafka values, `customer-risk` round trip, STEDI patch, `POST /simulation` → live risk events on the topic and in the logging consumer (123 events in ~4 minutes).
 
 ## Solutions
 
@@ -47,6 +47,8 @@ kubectl logs -f deployment/risk-logging-consumer -n <ns>
 STEDI risk events are **streaming**: events are produced continuously as users complete step tests and consumed within seconds, one event at a time, with no accumulation window. Batch would fit a nightly re-score of all historical customers; micro-batch would fit aggregating risk scores every few minutes for a dashboard where second-level latency is unnecessary.
 
 ## Gotchas
+
+- **Kafka install hangs; `kafka-controller-0` stuck `Init:ImagePullBackOff` (found 2026-10-30).** `docker.io/bitnami/kafka:4.0.0-debian-12-r10` returns NotFound: Bitnami removed its legacy tags from Docker Hub in 2025, and `bitnami/kafka:3.9` (client and logging-consumer pods) is gone too. The starter values now pull `bitnamilegacy/kafka` with `global.security.allowInsecureImages: true` and set replication factor 1 for internal topics, matching the verified 4.4 values; the client and consumer use `bitnamilegacy/kafka:4.0.0-debian-12-r10`. A failed release must be removed first: `helm uninstall kafka -n <ns>` and delete its PVC.
 
 - **Bitnami chart renamed broker values to `controller.*`** in the KRaft era; older tutorials that set `replicaCount` at the top level silently deploy defaults (chart key renames).
 - **Consumer says `LEADER_NOT_AVAILABLE` right after install** — Kafka takes a minute to elect; retry rather than reinstalling.
