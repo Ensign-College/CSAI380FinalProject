@@ -12,5 +12,5 @@ spec:
             - name: KAFKA_BROKER
               value: "kafka.<your-namespace>.svc.cluster.local:9092"
             # Solution to TODO(student): matches the topic created in step 3
-            - name: KAFKA_RISK_TOPIC
+            - name: KAFKA_STEDI_EVENTS_TOPIC
               value: "customer-risk"

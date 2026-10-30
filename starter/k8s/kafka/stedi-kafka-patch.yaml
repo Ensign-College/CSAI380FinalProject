@@ -1,6 +1,7 @@
 # Strategic-merge patch for the STEDI deployment — week 4.
-# Points STEDI at your in-cluster Kafka and turns on demo mode so the
-# simulation can generate live user data.
+# Points STEDI at your in-cluster Kafka and the topic its simulator publishes
+# risk events to. Simulator reference:
+#   https://github.com/STEDI-Balance/stedi-web#simulator-demo-data
 # Apply with:
 #   kubectl patch deployment stedi -n <your-namespace> --patch-file stedi-kafka-patch.yaml
 apiVersion: apps/v1
@@ -16,5 +17,7 @@ spec:
             # Bitnami chart service DNS: <release>.<namespace>.svc.cluster.local:9092
             - name: KAFKA_BROKER
               value: "kafka.<your-namespace>.svc.cluster.local:9092"
-            # TODO(student): add the KAFKA_RISK_TOPIC environment variable and
-            # set it to the topic you created in step 2 of assignment 4.5.
+            # TODO(student): add the KAFKA_STEDI_EVENTS_TOPIC environment variable
+            # and set it to the topic you created in step 3 of assignment 4.5.
+            # (KAFKA_RISK_TOPIC is the topic STEDI reads from; it does not change
+            # where STEDI publishes.)
